@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 
 public class EditingPanel extends JPanel implements MouseListener, MouseMotionListener {
 
@@ -14,6 +15,11 @@ public class EditingPanel extends JPanel implements MouseListener, MouseMotionLi
     private Rectangle circle;
     private Rectangle square;
     private Rectangle roundSquare;
+
+    private BufferedImage currTriangle = Assets.getInstance().TRIANGLE_ICON;
+    private BufferedImage currCircle = Assets.getInstance().CIRCLE_ICON;
+    private BufferedImage currSquare = Assets.getInstance().SQUARE_ICON;
+    private BufferedImage currRoundSquare = Assets.getInstance().ROUND_SQUARE_ICON;
 
     public EditingPanel(){
         addMouseMotionListener( this );
@@ -30,15 +36,16 @@ public class EditingPanel extends JPanel implements MouseListener, MouseMotionLi
     public void paintComponent(Graphics g){
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-        g.drawImage(Assets.getInstance().TRIANGLE_ICON, 20, 9, this);
-        g.drawImage(Assets.getInstance().CIRCLE_ICON, 60, 9, this);
-        g.drawImage(Assets.getInstance().SQUARE_ICON, 100, 9, this);
-        g.drawImage(Assets.getInstance().ROUND_SQUARE_ICON, 140, 9, this);
         g2d.setColor(new Color(0xFF, 0xFF, 0xFF, 0x00));
         g2d.draw(triangle);
         g2d.draw(circle);
         g2d.draw(square);
         g2d.draw(roundSquare);
+        g.drawImage(currTriangle, 20, 9, this);
+        g.drawImage(currCircle, 60, 9, this);
+        g.drawImage(currSquare, 100, 9, this);
+        g.drawImage(currRoundSquare, 140, 9, this);
+
     }
 
     @Override
@@ -52,16 +59,35 @@ public class EditingPanel extends JPanel implements MouseListener, MouseMotionLi
         } else if(roundSquare.contains(e.getPoint())){
             System.out.println("Round square clicked");
         }
+        updateUI();
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-
+        if(triangle.contains(e.getPoint())) {
+            currTriangle = Assets.getInstance().TRIANGLE_ICON_PRESSED;
+        } else if(circle.contains(e.getPoint())){
+            currCircle = Assets.getInstance().CIRCLE_ICON_PRESSED;
+        } else if(square.contains(e.getPoint())){
+            currSquare = Assets.getInstance().SQUARE_ICON_PRESSED;
+        } else if(roundSquare.contains(e.getPoint())){
+            currRoundSquare = Assets.getInstance().ROUND_SQUARE_ICON_PRESSED;
+        }
+        repaint();
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        if(triangle.contains(e.getPoint())) {
+            currTriangle = Assets.getInstance().TRIANGLE_ICON;
+        } else if(circle.contains(e.getPoint())){
+            currCircle = Assets.getInstance().CIRCLE_ICON;
+        } else if(square.contains(e.getPoint())){
+            currSquare = Assets.getInstance().SQUARE_ICON;
+        } else if(roundSquare.contains(e.getPoint())){
+            currRoundSquare = Assets.getInstance().ROUND_SQUARE_ICON;
+        }
+        repaint();
     }
 
     @Override
@@ -81,6 +107,7 @@ public class EditingPanel extends JPanel implements MouseListener, MouseMotionLi
 
     @Override
     public void mouseMoved(MouseEvent e) {
-
+        if(triangle.contains(e.getPoint()) || circle.contains(e.getPoint()) || square.contains(e.getPoint()) || roundSquare.contains(e.getPoint()))
+            this.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 }

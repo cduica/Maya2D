@@ -112,8 +112,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
         camera.setX(deltaX + camera.getX());
         camera.setY(deltaY + camera.getY());
         System.out.println(camera.getX() + ", " + camera.getY());
-        paintComponent(g);
-        updateUI();
+        repaint();
         //System.out.println(this.getWidth());
     }
 }
