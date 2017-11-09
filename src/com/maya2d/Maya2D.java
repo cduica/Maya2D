@@ -22,7 +22,7 @@ public class Maya2D {
     }
 
     public static void showSplash(){
-        SplashScreen splash = new SplashScreen(3000);
+        SplashScreen splash = new SplashScreen(1000);
         splash.showSplash();
     }
 

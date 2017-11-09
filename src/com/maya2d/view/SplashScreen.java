@@ -1,5 +1,7 @@
 package com.maya2d.view;
 
+import com.maya2d.utilities.Assets;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -22,14 +24,8 @@ public class SplashScreen extends JWindow {
         int x = (screen.width - width) / 2;
         int y = (screen.height - height) / 2;
         setBounds(x, y, width, height);
-        BufferedImage logo = null;
-        try {
-            logo = ImageIO.read(getClass().getResourceAsStream("/maya2dlogo.png"));
-        } catch (Exception e){
-            e.printStackTrace();
-        }
 
-        JLabel logoLabel = new JLabel(new ImageIcon(logo));
+        JLabel logoLabel = new JLabel(new ImageIcon(Assets.getInstance().MAYA2D_LOGO));
         content.add(logoLabel, BorderLayout.CENTER);
         JLabel copyrt = new JLabel("",
                 JLabel.CENTER);
