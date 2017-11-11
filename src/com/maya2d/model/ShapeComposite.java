@@ -1,5 +1,7 @@
 package com.maya2d.model;
 
+import com.maya2d.view.Visitor;
+
 import java.awt.*;
 
 public class ShapeComposite extends Component {
@@ -21,7 +23,13 @@ public class ShapeComposite extends Component {
     }
 
     @Override
-    public void accept(ComponentVisitor v) {
-
+    public void accept(Visitor v) {
+        v.visitShape(this);
+        //notifyObservers();
     }
+
+    public Shape getShape(){
+        return this.shape;
+    }
+
 }

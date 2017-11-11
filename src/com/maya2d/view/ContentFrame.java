@@ -1,5 +1,7 @@
 package com.maya2d.view;
 
+import com.maya2d.model.MayaCanvas;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -23,6 +25,10 @@ public class ContentFrame extends JFrame {
         addMenu();
         contentPanel = new ContentPanel();
         contentPanel.setPreferredSize(new Dimension(400, 400));
+        DrawingVisitor v = new DrawingVisitor(contentPanel);
+        MayaCanvas mayaCanvas = new MayaCanvas(v);
+        mayaCanvas.attach(contentPanel);
+        contentPanel.setCanvas(mayaCanvas);
         this.getContentPane().add(contentPanel, BorderLayout.CENTER);
         framePanel = new FramePanel();
         framePanel.setPreferredSize(new Dimension(1280, 60));
@@ -33,6 +39,7 @@ public class ContentFrame extends JFrame {
         attributesPanel.setBackground(new Color(45, 45, 45));
         this.getContentPane().add(attributesPanel, BorderLayout.EAST);
         editingPanel = new EditingPanel();
+        editingPanel.setCanvas(mayaCanvas);
         editingPanel.setBackground(new Color(45, 45, 45));
         editingPanel.setPreferredSize(new Dimension(1280, 40));
         this.getContentPane().add(editingPanel, BorderLayout.NORTH);

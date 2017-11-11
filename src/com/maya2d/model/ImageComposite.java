@@ -1,5 +1,8 @@
 package com.maya2d.model;
 
+import com.maya2d.view.DrawingVisitor;
+import com.maya2d.view.Visitor;
+
 import java.awt.image.BufferedImage;
 
 public class ImageComposite extends Component {
@@ -21,8 +24,12 @@ public class ImageComposite extends Component {
     }
 
     @Override
-    public void accept(ComponentVisitor v) {
-
+    public void accept(Visitor v) {
+        v.visitImage(this);
+        notifyObservers();
     }
 
+    public BufferedImage getImage() {
+        return image;
+    }
 }

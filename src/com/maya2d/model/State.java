@@ -17,4 +17,44 @@ public class State {
         this.visibility = visibility;
         this.frame = frame;
     }
+
+    public Point2D getPosition() {
+        return position;
+    }
+
+    public void setPosition(Point2D position) {
+        this.position = position;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public double getSize() {
+        return size;
+    }
+
+    public void setSize(double size) {
+        this.size = size;
+    }
+
+    public boolean isVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(boolean visibility) {
+        this.visibility = visibility;
+    }
+
+    public int getFrame() {
+        return frame;
+    }
+
+    public void setFrame(int frame) {
+        this.frame = frame;
+    }
 }

@@ -1,10 +1,17 @@
 package com.maya2d.view;
 
+import com.maya2d.model.ImageComposite;
+import com.maya2d.model.MayaCanvas;
+import com.maya2d.model.ShapeComposite;
+import com.maya2d.model.State;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
 
-public class ContentPanel extends JPanel implements MouseListener, MouseMotionListener {
+public class ContentPanel extends JPanel implements MouseListener, MouseMotionListener, Observer {
 
 
     private static final int DRAWING_SIZE = 1350;
@@ -15,10 +22,16 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
     private Camera camera;
     private double mPosX = 0;
     private double mPosY = 0;
-    private Graphics g;
     private boolean altPressed;
+    private java.util.List<ImageComposite> imageComposites;
+    private java.util.List<ShapeComposite> shapeComposites;
+    private MayaCanvas canvas;
+    private int currentFrame = 0;
 
     public ContentPanel(){
+        this.canvas = canvas;
+        imageComposites = new ArrayList<>();
+        shapeComposites = new ArrayList<>();
         this.setBackground(new Color(65, 65, 65));
         this.camera = new Camera(0, 0);
         addMouseMotionListener( this );
@@ -52,7 +65,6 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        this.g = g;
         Graphics2D g2 = (Graphics2D) g;
         g2.setPaint(new Color(85, 85, 85));
         for (int i = 1; i < SUBDIVISIONS; i++) {
@@ -63,6 +75,43 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
             int y = i * SUBDIVISION_SIZE - (int)camera.getY();
             g2.drawLine(0, y, getSize().width, y);
         }
+
+        // paint shapes in the current camera context
+        for (int i = 0; i < shapeComposites.size(); ++i){
+            ShapeComposite c = shapeComposites.get(i);
+            if(c.getShape() instanceof Rectangle){
+                State s = c.getStateAtFrame(0);
+                int x = (int) (s.getPosition().getX() + camera.getX());
+                int y = (int) (s.getPosition().getY() - camera.getY());
+                Rectangle r = new Rectangle(x, y, 45, 45);
+                g2.setColor(s.getColor());
+                g2.fill(r);
+            }
+
+        }
+
+        // paint images in the current camera context
+        for(int i = 0; i < imageComposites.size(); ++i){
+
+        }
+    }
+
+    public void addImage(ImageComposite i){
+        imageComposites.add(i);
+    }
+
+    public void addShape(ShapeComposite s){
+        shapeComposites.add(s);
+    }
+
+    private void deleteImage(Point p){
+        imageComposites.remove(canvas.get(p));
+        canvas.remove(p);
+    }
+
+    private void deleteShape(Point p){
+        shapeComposites.remove(canvas.get(p));
+        canvas.remove(p);
     }
 
     @Override
@@ -114,5 +163,24 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
         System.out.println(camera.getX() + ", " + camera.getY());
         repaint();
         //System.out.println(this.getWidth());
+    }
+
+    @Override
+    public void update() {
+        if(canvas.contains(new Point(-9999, -9999))) {
+            com.maya2d.model.Component newShape = canvas.get(new Point(-9999, -9999));
+            Point p = new Point(getWidth()/2, getHeight()/2);
+            State s = new State(p, new Color(0x00d1ff), 1.0, true, 0);
+            newShape.addState(s);
+            newShape.attach(this);
+            canvas.remove(new Point(-9999, -9999));
+            canvas.add(newShape, p);
+        }
+        canvas.draw();
+        repaint();
+    }
+
+    public void setCanvas(MayaCanvas mayaCanvas){
+        this.canvas = mayaCanvas;
     }
 }
