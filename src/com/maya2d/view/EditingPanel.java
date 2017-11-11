@@ -10,7 +10,10 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.RectangularShape;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -61,19 +64,28 @@ public class EditingPanel extends JPanel implements MouseListener, MouseMotionLi
     public void mouseClicked(MouseEvent e) {
         if(triangle.contains(e.getPoint())) {
             System.out.println("Triangle clicked");
-            //int xPoly[] = {15, 25, 32, 37, 45, 27, 10};
-            //int yPoly[] = {15, 10, 12, 22, 25, 37, 30};
-            //Polygon poly = new Polygon(xPoly, yPoly, xPoly.length);
-            Rectangle c = new Rectangle(15, 15);
-            ShapeComposite shapeComposite = new ShapeComposite(c);
+            Polygon p = new Polygon();
+            ShapeComposite shapeComposite = new ShapeComposite(p);
             canvas.add(shapeComposite, new Point(-9999, -9999));
             canvas.notifyObservers();
         } else if(circle.contains(e.getPoint())){
             System.out.println("Circle clicked");
+            Ellipse2D c = new Ellipse2D.Double();
+            ShapeComposite shapeComposite = new ShapeComposite(c);
+            canvas.add(shapeComposite, new Point(-9999, -9999));
+            canvas.notifyObservers();
         } else if(square.contains(e.getPoint())){
             System.out.println("Square clicked");
+            Rectangle r = new Rectangle();
+            ShapeComposite shapeComposite = new ShapeComposite(r);
+            canvas.add(shapeComposite, new Point(-9999, -9999));
+            canvas.notifyObservers();
         } else if(roundSquare.contains(e.getPoint())){
             System.out.println("Round square clicked");
+            RoundRectangle2D r = new RoundRectangle2D.Double();
+            ShapeComposite shapeComposite = new ShapeComposite(r);
+            canvas.add(shapeComposite, new Point(-9999, -9999));
+            canvas.notifyObservers();
         }
         updateUI();
     }

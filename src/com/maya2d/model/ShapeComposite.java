@@ -32,4 +32,8 @@ public class ShapeComposite extends Component {
         return this.shape;
     }
 
+    public void setShape(Shape s){
+        this.shape = s;
+    }
+
 }

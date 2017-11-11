@@ -4,13 +4,13 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 
 public class State {
-    private Point2D position;
+    private Point position;
     private Color color;
     private double size;
     private boolean visibility;
     private int frame;
 
-    public State(Point2D position, Color color, double size, boolean visibility, int frame) {
+    public State(Point position, Color color, double size, boolean visibility, int frame) {
         this.position = position;
         this.color = color;
         this.size = size;
@@ -18,11 +18,11 @@ public class State {
         this.frame = frame;
     }
 
-    public Point2D getPosition() {
+    public Point getPosition() {
         return position;
     }
 
-    public void setPosition(Point2D position) {
+    public void setPosition(Point position) {
         this.position = position;
     }
 

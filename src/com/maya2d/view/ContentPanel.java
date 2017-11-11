@@ -8,15 +8,17 @@ import com.maya2d.model.State;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 
 public class ContentPanel extends JPanel implements MouseListener, MouseMotionListener, Observer {
 
 
     private static final int DRAWING_SIZE = 1350;
-    private static final int SUBDIVISIONS = 30;
-    private static final int SUBDIVISION_SIZE = DRAWING_SIZE / SUBDIVISIONS;
+    private static final int SUBDIVISIONS = 100;
+    private static final int SUBDIVISION_SIZE = 45;
     private int planeHeight = 1280;
     private int planeWidth = 4000;
     private Camera camera;
@@ -27,6 +29,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
     private java.util.List<ShapeComposite> shapeComposites;
     private MayaCanvas canvas;
     private int currentFrame = 0;
+    private com.maya2d.model.Component selected;
 
     public ContentPanel(){
         this.canvas = canvas;
@@ -78,12 +81,30 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 
         // paint shapes in the current camera context
         for (int i = 0; i < shapeComposites.size(); ++i){
-            ShapeComposite c = shapeComposites.get(i);
-            if(c.getShape() instanceof Rectangle){
-                State s = c.getStateAtFrame(0);
-                int x = (int) (s.getPosition().getX() + camera.getX());
-                int y = (int) (s.getPosition().getY() - camera.getY());
-                Rectangle r = new Rectangle(x, y, 45, 45);
+            ShapeComposite shapeComposite = shapeComposites.get(i);
+            State s = shapeComposite.getStateAtFrame(0);
+            int x = (int) (s.getPosition().getX() + camera.getX());
+            int y = (int) (s.getPosition().getY() - camera.getY());
+            if(shapeComposite.getShape() instanceof Polygon){
+                int[] xPoints = {x, x+23, x+46};
+                int[] yPoints = {y, y-40, y};
+                Polygon p = new Polygon(xPoints, yPoints, 3);
+                shapeComposite.setShape(p);
+                g2.setColor(s.getColor());
+                g2.fill(p);
+            } else if(shapeComposite.getShape() instanceof Ellipse2D){
+                Ellipse2D c = new Ellipse2D.Double(x, y, 46, 46);
+                shapeComposite.setShape(c);
+                g2.setColor(s.getColor());
+                g2.fill(c);
+            } else if(shapeComposite.getShape() instanceof Rectangle){
+                Rectangle r = new Rectangle(x, y, 46, 46);
+                shapeComposite.setShape(r);
+                g2.setColor(s.getColor());
+                g2.fill(r);
+            } else if(shapeComposite.getShape() instanceof RoundRectangle2D){
+                RoundRectangle2D r = new RoundRectangle2D.Double(x, y, 46-8, 46-8, 25, 25);
+                shapeComposite.setShape(r);
                 g2.setColor(s.getColor());
                 g2.fill(r);
             }
@@ -117,6 +138,17 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
     @Override
     public void mouseClicked(MouseEvent e) {
 
+        double x = e.getPoint().getX();
+        double y = e.getPoint().getY();
+
+        for(int i = 0; i < shapeComposites.size(); ++i){
+            Shape s = shapeComposites.get(i).getShape();
+
+            if(s.contains(x, y)){
+                selected = shapeComposites.get(i);
+                System.out.println("Shape selected");
+            }
+        }
     }
 
     @Override
@@ -142,13 +174,34 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if(altPressed)
+        if(altPressed) {
             updateCameraPosition(e);
+        }
+        updateSelectedPosition(e);
+
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
 
+    }
+
+    private void updateSelectedPosition(MouseEvent e){
+        if(selected!=null){
+            double deltaX = e.getPoint().getX() - mPosX;
+            double deltaY = mPosY - e.getPoint().getY();
+            State s = selected.getStateAtFrame(0);
+            Point position = s.getPosition();
+            mPosX = e.getPoint().getX();
+            mPosY = e.getPoint().getY();
+            int x = (int)(position.getX() + deltaX);
+            int y = (int)(position.getY() - deltaY);
+            Point newPosition = new Point( x, y);
+            s.setPosition(newPosition);
+            canvas.remove(position);
+            canvas.add(selected, newPosition);
+            repaint();
+        }
     }
 
     private void updateCameraPosition(MouseEvent e){
