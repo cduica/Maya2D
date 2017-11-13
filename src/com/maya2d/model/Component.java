@@ -68,4 +68,12 @@ public abstract class Component implements Subject, Element {
     public State getStateAtFrame(int i){
         return states.get(i);
     }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
 }

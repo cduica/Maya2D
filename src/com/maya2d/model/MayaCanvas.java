@@ -17,6 +17,7 @@ public class MayaCanvas implements Subject{
     private Map<Point, Component> components;
     private DrawingVisitor v;
     private List<Observer> observers;
+    private Component selected;
 
     public MayaCanvas(DrawingVisitor v){
         this.v = v;
@@ -37,8 +38,6 @@ public class MayaCanvas implements Subject{
     }
 
     public void remove(Point p){
-        if(components.containsKey(p))
-            System.out.println("hello");
         components.remove(p);
     }
 
@@ -64,5 +63,18 @@ public class MayaCanvas implements Subject{
         for(int i = 0; i < observers.size(); ++i){
             observers.get(i).update();
         }
+    }
+
+    public Component getSelected() {
+        return selected;
+    }
+
+    public void setSelected(Component selected) {
+        this.selected = selected;
+        notifyObservers();
+    }
+
+    public int getNumComponents(){
+        return components.size();
     }
 }

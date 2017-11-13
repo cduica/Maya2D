@@ -37,11 +37,14 @@ public class ContentFrame extends JFrame {
         attributesPanel = new AttributesPanel();
         attributesPanel.setPreferredSize(new Dimension(250, 800));
         attributesPanel.setBackground(new Color(45, 45, 45));
+        attributesPanel.setCanvas(mayaCanvas);
+        attributesPanel.attach(contentPanel);
+        mayaCanvas.attach(attributesPanel);
         this.getContentPane().add(attributesPanel, BorderLayout.EAST);
         editingPanel = new EditingPanel();
         editingPanel.setCanvas(mayaCanvas);
         editingPanel.setBackground(new Color(45, 45, 45));
-        editingPanel.setPreferredSize(new Dimension(1280, 40));
+        editingPanel.setPreferredSize(new Dimension(1280, 60));
         this.getContentPane().add(editingPanel, BorderLayout.NORTH);
     }
 

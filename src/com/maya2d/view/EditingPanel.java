@@ -38,11 +38,12 @@ public class EditingPanel extends JPanel implements MouseListener, MouseMotionLi
         addMouseMotionListener( this );
         addMouseListener( this );
         observers = new ArrayList<>();
+        this.setLayout(new BorderLayout());
         // hardcoded layout haha
-        triangle = new Rectangle(20,9,25, 25);
-        circle = new Rectangle(60, 9,25, 25);
-        square = new Rectangle(100, 9,25, 25);
-        roundSquare = new Rectangle(140,9,25, 25);
+        triangle = new Rectangle(20,25,25, 25);
+        circle = new Rectangle(60, 25,25, 25);
+        square = new Rectangle(100, 25,25, 25);
+        roundSquare = new Rectangle(140,25,25, 25);
     }
 
     @Override
@@ -54,10 +55,12 @@ public class EditingPanel extends JPanel implements MouseListener, MouseMotionLi
         g2d.draw(circle);
         g2d.draw(square);
         g2d.draw(roundSquare);
-        g.drawImage(currTriangle, 20, 9, this);
-        g.drawImage(currCircle, 60, 9, this);
-        g.drawImage(currSquare, 100, 9, this);
-        g.drawImage(currRoundSquare, 140, 9, this);
+        g.drawImage(currTriangle, 20, 25, this);
+        g.drawImage(currCircle, 60, 25, this);
+        g.drawImage(currSquare, 100, 25, this);
+        g.drawImage(currRoundSquare, 140, 25, this);
+        g2d.setColor(Color.LIGHT_GRAY);
+        g2d.drawString("Shapes", 22, 16);
     }
 
     @Override
@@ -66,24 +69,28 @@ public class EditingPanel extends JPanel implements MouseListener, MouseMotionLi
             System.out.println("Triangle clicked");
             Polygon p = new Polygon();
             ShapeComposite shapeComposite = new ShapeComposite(p);
+            shapeComposite.setIdentifier("Shape " + canvas.getNumComponents());
             canvas.add(shapeComposite, new Point(-9999, -9999));
             canvas.notifyObservers();
         } else if(circle.contains(e.getPoint())){
             System.out.println("Circle clicked");
             Ellipse2D c = new Ellipse2D.Double();
             ShapeComposite shapeComposite = new ShapeComposite(c);
+            shapeComposite.setIdentifier("Shape " + canvas.getNumComponents());
             canvas.add(shapeComposite, new Point(-9999, -9999));
             canvas.notifyObservers();
         } else if(square.contains(e.getPoint())){
             System.out.println("Square clicked");
             Rectangle r = new Rectangle();
             ShapeComposite shapeComposite = new ShapeComposite(r);
+            shapeComposite.setIdentifier("Shape " + canvas.getNumComponents());
             canvas.add(shapeComposite, new Point(-9999, -9999));
             canvas.notifyObservers();
         } else if(roundSquare.contains(e.getPoint())){
             System.out.println("Round square clicked");
             RoundRectangle2D r = new RoundRectangle2D.Double();
             ShapeComposite shapeComposite = new ShapeComposite(r);
+            shapeComposite.setIdentifier("Shape " + canvas.getNumComponents());
             canvas.add(shapeComposite, new Point(-9999, -9999));
             canvas.notifyObservers();
         }
