@@ -1,5 +1,7 @@
 package com.maya2d.utilities;
 
+import com.maya2d.model.ImageComposite;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 
@@ -22,6 +24,10 @@ public class Assets {
     public BufferedImage ROUND_SQUARE_ICON_PRESSED;
     public BufferedImage CIRCLE_ICON_PRESSED;
 
+    public BufferedImage TRANSLATE_TOOL;
+    public BufferedImage ROTATE_TOOL;
+    public BufferedImage EXPAND_TOOL;
+
     private Assets() {
         try {
             MAYA2D_LOGO = ImageIO.read(getClass().getResourceAsStream("/maya2dlogo.png"));
@@ -33,6 +39,9 @@ public class Assets {
             SQUARE_ICON_PRESSED = ImageIO.read(getClass().getResourceAsStream("/square_pressed.png"));
             ROUND_SQUARE_ICON_PRESSED = ImageIO.read(getClass().getResourceAsStream("/round_square_pressed.png"));
             CIRCLE_ICON_PRESSED = ImageIO.read(getClass().getResourceAsStream("/circle_pressed.png"));
+            TRANSLATE_TOOL = ImageIO.read(getClass().getResourceAsStream("/translate_tool.png"));
+            ROTATE_TOOL = ImageIO.read(getClass().getResourceAsStream("/rotate_tool.png"));
+            EXPAND_TOOL = ImageIO.read(getClass().getResourceAsStream("/expand_tool.png"));
         } catch (Exception e){
             e.printStackTrace();
         }

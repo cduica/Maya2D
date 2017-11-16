@@ -16,6 +16,9 @@ import java.util.ArrayList;
 public class AttributesPanel extends JPanel implements MouseListener, MouseMotionListener, Subject, Observer {
 
     private JTextField identifierField;
+    private JTextField xField;
+    private JTextField yField;
+    private JTextField rotateField;
     private Rectangle red;
     private Rectangle orange;
     private Rectangle pink;
@@ -50,18 +53,57 @@ public class AttributesPanel extends JPanel implements MouseListener, MouseMotio
         JLabel xLabel = new JLabel("X: ");
         xLabel.setForeground(Color.LIGHT_GRAY);
         JLabel yLabel = new JLabel("Y: ");
+        yLabel.setForeground(Color.LIGHT_GRAY);
         this.add(identifierLabel);
         this.add(Box.createRigidArea(new Dimension(0, 10)));
-        Box box = Box.createHorizontalBox();
-        box.add(Box.createHorizontalGlue());
-        box.add(identifierField);
-        box.add(Box.createHorizontalGlue());
-        this.add(box);
+        Box identifierBox = Box.createHorizontalBox();
+        identifierBox.add(Box.createHorizontalGlue());
+        identifierBox.add(identifierField);
+        identifierBox.add(Box.createHorizontalGlue());
+        this.add(identifierBox);
         this.add(Box.createRigidArea(new Dimension(0, 12)));
         this.add(colorLabel);
         this.add(Box.createRigidArea(new Dimension(0, 45)));
-        //this.add(xLabel);
-        //this.add(Box.createRigidArea(new Dimension(0, 12)));
+        this.add(xLabel);
+        this.add(Box.createRigidArea(new Dimension(0, 10)));
+        xField = new JTextField(18);
+        xField.setMaximumSize(new Dimension(100, 22));
+        xField.setBackground(Color.DARK_GRAY);
+        xField.setForeground(Color.LIGHT_GRAY);
+        xField.setCaretColor(Color.LIGHT_GRAY);
+        Box xBox = Box.createHorizontalBox();
+        xBox.add(Box.createHorizontalGlue());
+        xBox.add(xField);
+        xBox.add(Box.createHorizontalGlue());
+        this.add(xBox);
+        this.add(Box.createRigidArea(new Dimension(0, 10)));
+        this.add(yLabel);
+        this.add(Box.createRigidArea(new Dimension(0, 10)));
+        yField = new JTextField(18);
+        yField.setMaximumSize(new Dimension(100, 22));
+        yField.setBackground(Color.DARK_GRAY);
+        yField.setForeground(Color.LIGHT_GRAY);
+        yField.setCaretColor(Color.LIGHT_GRAY);
+        Box yBox = Box.createHorizontalBox();
+        yBox.add(Box.createHorizontalGlue());
+        yBox.add(yField);
+        yBox.add(Box.createHorizontalGlue());
+        this.add(yBox);
+        this.add(Box.createRigidArea(new Dimension(0, 10)));
+        JLabel rotationLabel = new JLabel("Rotation: ");
+        rotationLabel.setForeground(Color.LIGHT_GRAY);
+        this.add(rotationLabel);
+        this.add(Box.createRigidArea(new Dimension(0, 10)));
+        rotateField = new JTextField(18);
+        rotateField.setMaximumSize(new Dimension(100, 22));
+        rotateField.setBackground(Color.DARK_GRAY);
+        rotateField.setForeground(Color.LIGHT_GRAY);
+        rotateField.setCaretColor(Color.LIGHT_GRAY);
+        Box rotateBox = Box.createHorizontalBox();
+        rotateBox.add(Box.createHorizontalGlue());
+        rotateBox.add(rotateField);
+        rotateBox.add(Box.createHorizontalGlue());
+        this.add(rotateBox);
     }
 
     @Override
@@ -96,7 +138,10 @@ public class AttributesPanel extends JPanel implements MouseListener, MouseMotio
         System.out.println(e.getPoint().getX() + ", " + e.getPoint().getY());
         if(!identifierField.contains(e.getPoint())){
             canvas.getSelected().setIdentifier(identifierField.getText());
-            identifierField.transferFocus();
+            identifierField.transferFocusBackward();
+//            xField.transferFocus();
+//            yField.transferFocus();
+//            rotateField.transferFocus();
         }
         if(red.contains(e.getPoint())){
             com.maya2d.model.Component c = canvas.getSelected();

@@ -1,9 +1,6 @@
 package com.maya2d.view;
 
 import com.maya2d.model.*;
-import org.w3c.dom.css.Rect;
-
-import javax.sound.sampled.Line;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -13,8 +10,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 
 public class ContentPanel extends JPanel implements MouseListener, MouseMotionListener, Observer {
-
-
+    
     private static final int DRAWING_SIZE = 1350;
     private static final int SUBDIVISIONS = 100;
     private static final int SUBDIVISION_SIZE = 45;
@@ -30,9 +26,9 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
     private int currentFrame = 0;
     private com.maya2d.model.Component selected;
     private MayaSelector mayaSelector;
+    private MayaRotator mayaRotator;
 
     public ContentPanel(){
-        this.canvas = canvas;
         imageComposites = new ArrayList<>();
         shapeComposites = new ArrayList<>();
         this.setBackground(new Color(65, 65, 65));
@@ -117,7 +113,6 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
         }
 
         if(mayaSelector!=null){
-            java.util.List<Shape> shapes = mayaSelector.getShapes();
             Rectangle rect = mayaSelector.getRect();
             Line2D lineY = mayaSelector.getLineY();
             Polygon p1 = mayaSelector.getP1();
@@ -137,6 +132,13 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
             g2.setColor(mayaSelector.getColor(xy));
             g2.fill(xy);
         }
+
+        if(mayaRotator!=null){
+            Ellipse2D circle = mayaRotator.getCircle();
+            g2.setColor(Color.GREEN);
+            g2.draw(circle);
+        }
+
     }
 
     public void addImage(ImageComposite i){
@@ -159,8 +161,13 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
         canvas.remove(p);
     }
 
-    public void createSelector(int x, int y){
+    private void createSelector(int x, int y){
         mayaSelector = new MayaSelector(x, y);
+        repaint();
+    }
+
+    private void createRotator(int x, int y){
+        mayaRotator = new MayaRotator(x, y);
         repaint();
     }
 
@@ -176,7 +183,8 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
             if(s.contains(x, y)){
                 canvas.setSelected(shapeComposites.get(i));
                 System.out.println(s.getBounds().width/2);
-                createSelector((int) x, (int) y-15);
+                //createSelector((int) x, (int) y);
+                createRotator((int)x, (int)y);
                 break;
             } else {
                 canvas.setSelected(null);
@@ -220,12 +228,28 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
             } else if (mayaSelector.getXy().contains(mPosX, mayaSelector.getXy().getY())) {
                 updateSelectedPositionDiag(e);
             }
+        } else if(canvas.getSelected()!=null && mayaRotator!=null) {
+            if (mayaRotator.getCircle().contains(mPosX, mPosY)) {
+                rotateSelected(e);
+            }
         }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
 
+    }
+
+    private void rotateSelected(MouseEvent e){
+        if(canvas.getSelected()!=null){
+            // use distance formula from origin to calculate the amount of change
+            double delta = Math.sqrt(Math.pow(e.getPoint().getX() - mPosX, 2) + Math.pow(e.getPoint().getY() - mPosY, 2));
+            mPosX = e.getPoint().getX();
+            mPosY = e.getPoint().getY();
+            System.out.println(delta);
+            State s = canvas.getSelected().getStateAtFrame(0);
+
+        }
     }
 
     private void updateSelectedPositionY(MouseEvent e){
