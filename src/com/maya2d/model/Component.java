@@ -36,12 +36,14 @@ public abstract class Component implements Subject, Element {
         return children.iterator();
     }
 
-    public void translateX(double amount){
-
+    public void setX(double x){
+        State s = states.get(0);
+        s.setX(x);
     }
 
-    public void translateY(double amount){
-
+    public void setY(double y){
+        State s = states.get(0);
+        s.setY(y);
     }
 
     public abstract void rotate(double angle);

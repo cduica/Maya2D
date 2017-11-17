@@ -22,7 +22,7 @@ public class MayaSelector {
 
     public MayaSelector(int x, int y){
         this.x = x;
-        this.y = y - 15;
+        this.y = y;
         colors = new HashMap<>();
         shapes = new ArrayList<>();
         rect = new Rectangle(x, y, 15, 15);

@@ -3,6 +3,7 @@ package com.maya2d.view;
 import com.maya2d.model.MayaCanvas;
 import com.maya2d.model.ShapeComposite;
 import com.maya2d.utilities.Assets;
+import com.sun.xml.internal.bind.v2.util.EditDistance;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,20 +35,19 @@ public class EditingPanel extends JPanel implements MouseListener, MouseMotionLi
     private BufferedImage rotateToolIcon = Assets.getInstance().ROTATE_TOOL;
     private BufferedImage expandToolIcon = Assets.getInstance().EXPAND_TOOL;
 
-    private boolean translatePressed;
-    private boolean rotatePressed;
-    private boolean expandPressed;
-
     private java.util.List<Observer> observers;
 
     private MayaCanvas canvas;
 
     public EditingPanel(){
-        this.canvas = canvas;
         addMouseMotionListener( this );
         addMouseListener( this );
         observers = new ArrayList<>();
         this.setLayout(new BorderLayout());
+        createLayout();
+    }
+
+    private void createLayout(){
         // hardcoded layout haha
         triangle = new Rectangle(20,25,25, 25);
         circle = new Rectangle(60, 25,25, 25);
@@ -86,13 +86,13 @@ public class EditingPanel extends JPanel implements MouseListener, MouseMotionLi
         g.drawImage(expandToolIcon, 272, 25, this);
         g2d.drawString("Tools", 190, 16);
         g2d.setColor(Color.YELLOW);
-        if(translatePressed){
+        if(canvas.getEditingState().equals(EditingState.TRANSLATE)){
             g2d.draw(translateTool);
         }
-        if(rotatePressed){
+        if(canvas.getEditingState().equals(EditingState.ROTATE)){
             g2d.draw(rotateTool);
         }
-        if(expandPressed){
+        if(canvas.getEditingState().equals(EditingState.EXPAND)){
             g2d.draw(expandTool);
         }
 
@@ -100,7 +100,13 @@ public class EditingPanel extends JPanel implements MouseListener, MouseMotionLi
 
     @Override
     public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
         if(triangle.contains(e.getPoint())) {
+            currTriangleIcon = Assets.getInstance().TRIANGLE_ICON_PRESSED;
             System.out.println("Triangle clicked");
             Polygon p = new Polygon();
             ShapeComposite shapeComposite = new ShapeComposite(p);
@@ -108,6 +114,7 @@ public class EditingPanel extends JPanel implements MouseListener, MouseMotionLi
             canvas.add(shapeComposite, new Point(-9999, -9999));
             canvas.notifyObservers();
         } else if(circle.contains(e.getPoint())){
+            currCircleIcon = Assets.getInstance().CIRCLE_ICON_PRESSED;
             System.out.println("Circle clicked");
             Ellipse2D c = new Ellipse2D.Double();
             ShapeComposite shapeComposite = new ShapeComposite(c);
@@ -115,6 +122,7 @@ public class EditingPanel extends JPanel implements MouseListener, MouseMotionLi
             canvas.add(shapeComposite, new Point(-9999, -9999));
             canvas.notifyObservers();
         } else if(square.contains(e.getPoint())){
+            currSquareIcon = Assets.getInstance().SQUARE_ICON_PRESSED;
             System.out.println("Square clicked");
             Rectangle r = new Rectangle();
             ShapeComposite shapeComposite = new ShapeComposite(r);
@@ -122,32 +130,22 @@ public class EditingPanel extends JPanel implements MouseListener, MouseMotionLi
             canvas.add(shapeComposite, new Point(-9999, -9999));
             canvas.notifyObservers();
         } else if(roundSquare.contains(e.getPoint())){
+            currRoundSquareIcon = Assets.getInstance().ROUND_SQUARE_ICON_PRESSED;
             System.out.println("Round square clicked");
             RoundRectangle2D r = new RoundRectangle2D.Double();
             ShapeComposite shapeComposite = new ShapeComposite(r);
             shapeComposite.setIdentifier("Shape " + canvas.getNumComponents());
             canvas.add(shapeComposite, new Point(-9999, -9999));
             canvas.notifyObservers();
-        }
-        updateUI();
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-        if(triangle.contains(e.getPoint())) {
-            currTriangleIcon = Assets.getInstance().TRIANGLE_ICON_PRESSED;
-        } else if(circle.contains(e.getPoint())){
-            currCircleIcon = Assets.getInstance().CIRCLE_ICON_PRESSED;
-        } else if(square.contains(e.getPoint())){
-            currSquareIcon = Assets.getInstance().SQUARE_ICON_PRESSED;
-        } else if(roundSquare.contains(e.getPoint())){
-            currRoundSquareIcon = Assets.getInstance().ROUND_SQUARE_ICON_PRESSED;
         } else if(translateTool.contains(e.getPoint())){
-            translatePressed = !translatePressed;
+            canvas.setEditingState(EditingState.TRANSLATE);
+            canvas.notifyObservers();
         } else if(rotateTool.contains(e.getPoint())){
-            rotatePressed = !rotatePressed;
+            canvas.setEditingState(EditingState.ROTATE);
+            canvas.notifyObservers();
         } else if(expandTool.contains(e.getPoint())){
-            expandPressed = !expandPressed;
+            canvas.setEditingState(EditingState.EXPAND);
+            canvas.notifyObservers();
         }
         repaint();
     }
@@ -183,7 +181,10 @@ public class EditingPanel extends JPanel implements MouseListener, MouseMotionLi
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        if(triangle.contains(e.getPoint()) || circle.contains(e.getPoint()) || square.contains(e.getPoint()) || roundSquare.contains(e.getPoint())) {
+        if(triangle.contains(e.getPoint()) || circle.contains(e.getPoint())
+                || square.contains(e.getPoint()) || roundSquare.contains(e.getPoint())
+                || translateTool.contains(e.getPoint()) || rotateTool.contains(e.getPoint())
+                || expandTool.contains(e.getPoint())) {
             this.setCursor(new Cursor(Cursor.HAND_CURSOR));
         } else {
             this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));

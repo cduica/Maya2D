@@ -1,6 +1,7 @@
 package com.maya2d.model;
 
 import com.maya2d.view.DrawingVisitor;
+import com.maya2d.view.EditingState;
 import com.maya2d.view.Observer;
 import com.maya2d.view.Subject;
 
@@ -18,8 +19,10 @@ public class MayaCanvas implements Subject{
     private DrawingVisitor v;
     private List<Observer> observers;
     private Component selected;
+    private EditingState editingState;
 
     public MayaCanvas(DrawingVisitor v){
+        editingState = EditingState.TRANSLATE;
         this.v = v;
         components = new HashMap<>();
         observers = new ArrayList<>();
@@ -76,5 +79,13 @@ public class MayaCanvas implements Subject{
 
     public int getNumComponents(){
         return components.size();
+    }
+
+    public void setEditingState(EditingState editingState){
+        this.editingState = editingState;
+    }
+
+    public EditingState getEditingState(){
+        return this.editingState;
     }
 }

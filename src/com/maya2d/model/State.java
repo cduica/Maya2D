@@ -26,6 +26,14 @@ public class State {
         this.position = position;
     }
 
+    public void setX(double x){
+        position.setLocation(x, position.getY());
+    }
+
+    public void setY(double y){
+        position.setLocation(position.getX(), y);
+    }
+
     public Color getColor() {
         return color;
     }

@@ -8,9 +8,7 @@ import jdk.nashorn.internal.scripts.JO;
 import javax.swing.*;
 import javax.swing.plaf.basic.DefaultMenuLayout;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 public class AttributesPanel extends JPanel implements MouseListener, MouseMotionListener, Subject, Observer {
@@ -33,6 +31,12 @@ public class AttributesPanel extends JPanel implements MouseListener, MouseMotio
         addMouseListener( this );
         observers = new ArrayList<>();
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+        createLayout();
+        createKeyListeners();
+
+    }
+
+    private void createLayout(){
         // this.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
         JLabel identifierLabel = new JLabel("Identifier:");
         identifierLabel.setForeground(Color.LIGHT_GRAY);
@@ -106,6 +110,101 @@ public class AttributesPanel extends JPanel implements MouseListener, MouseMotio
         this.add(rotateBox);
     }
 
+    private void createKeyListeners(){
+        identifierField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(e.getKeyCode()==KeyEvent.VK_ENTER){
+                    if(canvas.getSelected()!=null){
+                        canvas.getSelected().setIdentifier(identifierField.getText());
+                        identifierField.transferFocusBackward();
+                    }
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        });
+
+        xField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(e.getKeyCode()==KeyEvent.VK_ENTER) {
+                    if (canvas.getSelected() != null) {
+                        try {
+                            canvas.getSelected().setX(Double.parseDouble(xField.getText()));
+                            notifyObservers();
+                        } catch (Exception exception) {
+                            JOptionPane.showMessageDialog(getParent(), "X is invalid");
+                        }
+                        identifierField.transferFocusBackward();
+                    }
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        });
+
+        yField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    if (canvas.getSelected() != null) {
+                        try {
+                            canvas.getSelected().setY(Double.parseDouble(yField.getText()));
+                            notifyObservers();
+                        } catch (Exception exception) {
+                            JOptionPane.showMessageDialog(getParent(), "Y is invalid");
+                        }
+                        identifierField.transferFocusBackward();
+                    }
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        });
+
+        rotateField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                identifierField.transferFocusBackward();
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        });
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -136,12 +235,30 @@ public class AttributesPanel extends JPanel implements MouseListener, MouseMotio
     public void mousePressed(MouseEvent e) {
         System.out.println("D Rose");
         System.out.println(e.getPoint().getX() + ", " + e.getPoint().getY());
-        if(!identifierField.contains(e.getPoint())){
-            canvas.getSelected().setIdentifier(identifierField.getText());
+//        if(canvas.getSelected()!=null && !identifierField.contains(e.getPoint())){
+//
+//            identifierField.transferFocusBackward();
+//            try {
+//                canvas.getSelected().setX(Double.parseDouble(xField.getText()));
+//                canvas.getSelected().setY(Double.parseDouble(yField.getText()));
+//                notifyObservers();
+//            } catch (Exception exception){
+//                JOptionPane.showMessageDialog(this, "Input is invalid");
+//            }
+////            xField.transferFocus();
+////            yField.transferFocus();
+////            rotateField.transferFocus();
+//        }
+        if(!identifierField.contains(e.getPoint()) || !xField.contains(e.getPoint()) ||
+                !yField.contains(e.getPoint()) || rotateField.contains(e.getPoint())){
             identifierField.transferFocusBackward();
-//            xField.transferFocus();
-//            yField.transferFocus();
-//            rotateField.transferFocus();
+            if(canvas.getSelected()!=null){
+                identifierField.setText(canvas.getSelected().getIdentifier());
+                State s = canvas.getSelected().getStateAtFrame(0);
+                xField.setText("" + s.getPosition().getX());
+                yField.setText("" + s.getPosition().getY());
+            }
+
         }
         if(red.contains(e.getPoint())){
             com.maya2d.model.Component c = canvas.getSelected();
@@ -231,7 +348,11 @@ public class AttributesPanel extends JPanel implements MouseListener, MouseMotio
 
     @Override
     public void update() {
-        if(canvas.getSelected()!=null)
-        identifierField.setText(canvas.getSelected().getIdentifier());
+        if(canvas.getSelected()!=null) {
+            identifierField.setText(canvas.getSelected().getIdentifier());
+            State s = canvas.getSelected().getStateAtFrame(0);
+            xField.setText("" + s.getPosition().getX());
+            yField.setText("" + s.getPosition().getY());
+        }
     }
 }
