@@ -11,6 +11,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -124,7 +125,7 @@ public class EditingPanel extends JPanel implements MouseListener, MouseMotionLi
         } else if(square.contains(e.getPoint())){
             currSquareIcon = Assets.getInstance().SQUARE_ICON_PRESSED;
             System.out.println("Square clicked");
-            Rectangle r = new Rectangle();
+            Rectangle2D r = new Rectangle2D.Double();
             ShapeComposite shapeComposite = new ShapeComposite(r);
             shapeComposite.setIdentifier("Shape " + canvas.getNumComponents());
             canvas.add(shapeComposite, new Point(-9999, -9999));

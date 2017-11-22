@@ -10,25 +10,19 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 
-public class ContentPanel extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, Observer {
-    
-    private static final int DRAWING_SIZE = 1350;
-    private static final int SUBDIVISIONS = 100;
+public class ContentPanel extends JPanel implements MouseListener, MouseMotionListener, Observer {
+
     private static final int SUBDIVISION_SIZE = 45;
-    private int planeHeight = 1280;
-    private int planeWidth = 4000;
     private Camera camera;
     private double mPosX = 0;
     private double mPosY = 0;
     private boolean altPressed;
-    private boolean commandPressed;
     private java.util.List<ImageComposite> imageComposites;
     private java.util.List<ShapeComposite> shapeComposites;
     private MayaCanvas canvas;
     private int currentFrame = 0;
     private MayaSelector mayaSelector;
     private MayaRotator mayaRotator;
-    private double zoom = 1.0;
 
     public ContentPanel(){
         imageComposites = new ArrayList<>();
@@ -37,7 +31,6 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
         this.camera = new Camera(0, 0);
         addMouseMotionListener( this );
         addMouseListener( this );
-        addMouseWheelListener(this);
         this.setFocusable(true);
         this.requestFocus();
         this.addKeyListener(new KeyListener() {
@@ -51,9 +44,6 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
                 if(e.getKeyCode() == KeyEvent.VK_ALT){
                     System.out.println("Alt pressed");
                     altPressed = true;
-                } else if(e.getKeyCode() == KeyEvent.VK_META){
-                    System.out.println("Command pressed");
-                    commandPressed = true;
                 }
             }
 
@@ -62,8 +52,6 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
                 if(e.getKeyCode() == KeyEvent.VK_ALT){
                     System.out.println("Alt pressed");
                     altPressed = false;
-                } else if(e.getKeyCode() == KeyEvent.VK_META){
-                    commandPressed = false;
                 }
             }
         });
@@ -75,14 +63,12 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
         Graphics2D g2 = (Graphics2D) g;
         g2.setPaint(new Color(85, 85, 85));
         for (int i = -getSize().width; i < getSize().width; ++i) {
-            double localZoom = i < 0 && zoom < 0 ? -1*zoom : zoom;
-            double x = localZoom * i * SUBDIVISION_SIZE + camera.getX();
+            double x = i * SUBDIVISION_SIZE + camera.getX();
             Line2D line = new Line2D.Double(x, 0, x, getSize().height);
             g2.draw(line);
         }
         for (int i = -getSize().height; i < getSize().height; ++i) {
-            double localZoom = i < 0 && zoom < 0 ? -1*zoom : zoom;
-            double y = localZoom * i * SUBDIVISION_SIZE - camera.getY();
+            double y = i * SUBDIVISION_SIZE - camera.getY();
             Line2D line = new Line2D.Double(0, y, getSize().width, y);
             g2.draw(line);
         }
@@ -93,6 +79,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
             State s = shapeComposite.getStateAtFrame(0);
             double x = (s.getPosition().getX() + camera.getX());
             double y = (s.getPosition().getY() - camera.getY());
+            System.out.println(x + ", " + y);
             if(shapeComposite.getShape() instanceof Polygon){
                 int[] xPoints = {(int)x, (int)x+23, (int)x+46};
                 int[] yPoints = {(int)y, (int)y-40, (int)y};
@@ -105,13 +92,13 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
                 shapeComposite.setShape(c);
                 g2.setColor(s.getColor());
                 g2.fill(c);
-            } else if(shapeComposite.getShape() instanceof Rectangle){
-                Rectangle r = new Rectangle((int)x, (int)y, 46, 46);
+            } else if(shapeComposite.getShape() instanceof Rectangle2D){
+                Rectangle2D r = new Rectangle2D.Double(x, y, 46, 46);
                 shapeComposite.setShape(r);
                 g2.setColor(s.getColor());
                 g2.fill(r);
             } else if(shapeComposite.getShape() instanceof RoundRectangle2D){
-                RoundRectangle2D r = new RoundRectangle2D.Double(x, y, 46-8, 46-8, 25, 25);
+                RoundRectangle2D r = new RoundRectangle2D.Double(x, y, 38, 38, 25, 25);
                 shapeComposite.setShape(r);
                 g2.setColor(s.getColor());
                 g2.fill(r);
@@ -125,12 +112,14 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
         }
 
         if(mayaSelector!=null){
-            Rectangle rect = mayaSelector.getRect();
+            mayaSelector = new MayaSelector(mayaSelector.getX(), mayaSelector.getY());
+
+            Rectangle2D rect = mayaSelector.getRect();
             Line2D lineY = mayaSelector.getLineY();
             Polygon p1 = mayaSelector.getP1();
             Line2D lineX = mayaSelector.getLineX();
             Polygon p2 = mayaSelector.getP2();
-            Rectangle xy = mayaSelector.getXy();
+            Rectangle2D xy = mayaSelector.getXy();
             g2.setColor(mayaSelector.getColor(rect));
             g2.draw(rect);
             g2.setColor(mayaSelector.getColor(lineY));
@@ -173,7 +162,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
         canvas.remove(p);
     }
 
-    private void createSelector(int x, int y){
+    private void createSelector(double x, double y){
         mayaSelector = new MayaSelector(x, y - 15);
         repaint();
     }
@@ -191,17 +180,16 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 
         for(int i = 0; i < shapeComposites.size(); ++i){
             Shape s = shapeComposites.get(i).getShape();
-            State state = shapeComposites.get(i).getStateAtFrame(0);
             if(s.contains(x, y)){
                 canvas.setSelected(shapeComposites.get(i));
                 System.out.println(s.getBounds().width/2);
                 //createSelector((int) x, (int) y);
                 if(canvas.getEditingState().equals(EditingState.TRANSLATE)) {
-                    createSelector((int) x, (int) y);
+                    createSelector(x, y);
                     mayaRotator = null;
                 }
                 if(canvas.getEditingState().equals(EditingState.ROTATE)){
-                    createRotator((int) x, (int) y);
+                    createRotator((int) (x), (int) (y));
                     mayaSelector = null;
                 }
                 break;
@@ -283,8 +271,8 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
             s.setPosition(newPosition);
             canvas.remove(position);
             canvas.add(canvas.getSelected(), newPosition);
-            int selectorX = (mayaSelector.getX());
-            int selectorY = (int)(mayaSelector.getY() - deltaY);
+            double selectorX = (mayaSelector.getX());
+            double selectorY = (mayaSelector.getY() - deltaY);
             mayaSelector = new MayaSelector(selectorX, selectorY);
             repaint();
         }
@@ -301,8 +289,8 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
             s.setPosition(newPosition);
             canvas.remove(position);
             canvas.add(canvas.getSelected(), newPosition);
-            int selectorX = (int)(mayaSelector.getX() + deltaX);
-            int selectorY = (mayaSelector.getY());
+            double selectorX = (mayaSelector.getX() + deltaX);
+            double selectorY = (mayaSelector.getY());
             mayaSelector = new MayaSelector(selectorX, selectorY);
             repaint();
         }
@@ -321,8 +309,8 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
             s.setPosition(newPosition);
             canvas.remove(position);
             canvas.add(canvas.getSelected(), newPosition);
-            int selectorX = (int)(mayaSelector.getX() + deltaX);
-            int selectorY = (int)(mayaSelector.getY() - deltaX);
+            double selectorX = (mayaSelector.getX() + deltaX);
+            double selectorY = (mayaSelector.getY() - deltaX);
             mayaSelector = new MayaSelector(selectorX, selectorY);
             repaint();
         }
@@ -342,8 +330,8 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
             s.setPosition(newPosition);
             canvas.remove(position);
             canvas.add(canvas.getSelected(), newPosition);
-            int selectorX = (int)(mayaSelector.getX() + deltaX);
-            int selectorY = (int)(mayaSelector.getY() - deltaY);
+            double selectorX = (mayaSelector.getX() + deltaX);
+            double selectorY = (mayaSelector.getY() - deltaY);
             mayaSelector = new MayaSelector(selectorX, selectorY);
             repaint();
         }
@@ -360,7 +348,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
         camera.setX(x);
         camera.setY(y);
         if(mayaSelector!=null)
-            mayaSelector = new MayaSelector((int)(mayaSelector.getX() + deltaX), (int)(mayaSelector.getY() - deltaY));
+            mayaSelector = new MayaSelector(((mayaSelector.getX() + deltaX)), ((mayaSelector.getY() - deltaY)));
         if(mayaRotator!=null)
             mayaRotator = new MayaRotator((int)(mayaRotator.getX() + deltaX), (int)(mayaRotator.getY() - deltaY));
         System.out.println(camera.getX() + ", " + camera.getY());
@@ -384,7 +372,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
             mayaRotator = null;
         }
         if(canvas.getEditingState().equals(EditingState.ROTATE) && mayaSelector!=null){
-            createRotator(mayaSelector.getX(), mayaSelector.getY() + 15);
+            createRotator((int)mayaSelector.getX(), (int)mayaSelector.getY() + 15);
             mayaSelector = null;
         }
         canvas.draw();
@@ -395,13 +383,4 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
         this.canvas = mayaCanvas;
     }
 
-    @Override
-    public void mouseWheelMoved(MouseWheelEvent e) {
-        if(commandPressed && zoom > 0.2 && zoom < 2){
-            if( (zoom + (double) e.getWheelRotation()/100.0) > 0.2 && (zoom + (double) e.getWheelRotation()/100.0) < 2)
-                zoom += (double) e.getWheelRotation()/100.0;
-            System.out.println(zoom);
-            repaint();
-        }
-    }
 }
