@@ -182,14 +182,7 @@ public class EditingPanel extends JPanel implements MouseListener, MouseMotionLi
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        if(triangle.contains(e.getPoint()) || circle.contains(e.getPoint())
-                || square.contains(e.getPoint()) || roundSquare.contains(e.getPoint())
-                || translateTool.contains(e.getPoint()) || rotateTool.contains(e.getPoint())
-                || expandTool.contains(e.getPoint())) {
-            this.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        } else {
-            this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        }
+
     }
 
     private BufferedImage resizeImage(BufferedImage originalImage, int width, int height, int type) throws IOException {

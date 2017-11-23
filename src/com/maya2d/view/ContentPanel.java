@@ -358,6 +358,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 
     @Override
     public void update() {
+        // get newly initialized point and set its starting parameters
         if(canvas.contains(new Point(-9999, -9999))) {
             com.maya2d.model.Component newShape = canvas.get(new Point(-9999, -9999));
             Point p = new Point(getWidth()/2, getHeight()/2);

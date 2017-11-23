@@ -28,6 +28,10 @@ public class Assets {
     public BufferedImage ROTATE_TOOL;
     public BufferedImage EXPAND_TOOL;
 
+    public BufferedImage PLAY_BUTTON;
+    public BufferedImage BACK_BUTTON;
+    public BufferedImage FORWARD_BUTTON;
+
     private Assets() {
         try {
             MAYA2D_LOGO = ImageIO.read(getClass().getResourceAsStream("/maya2dlogo.png"));
@@ -42,6 +46,9 @@ public class Assets {
             TRANSLATE_TOOL = ImageIO.read(getClass().getResourceAsStream("/translate_tool.png"));
             ROTATE_TOOL = ImageIO.read(getClass().getResourceAsStream("/rotate_tool.png"));
             EXPAND_TOOL = ImageIO.read(getClass().getResourceAsStream("/expand_tool.png"));
+            PLAY_BUTTON = ImageIO.read(getClass().getResourceAsStream("/play_button.png"));
+            BACK_BUTTON = ImageIO.read(getClass().getResourceAsStream("/back_button.png"));
+            FORWARD_BUTTON = ImageIO.read(getClass().getResourceAsStream("/forward_button.png"));
         } catch (Exception e){
             e.printStackTrace();
         }

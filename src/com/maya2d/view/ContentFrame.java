@@ -13,6 +13,7 @@ public class ContentFrame extends JFrame {
     private FramePanel framePanel;
     private AttributesPanel attributesPanel;
     private EditingPanel editingPanel;
+    private PlayControlPanel playControlPanel;
 
     public ContentFrame(int width, int height){
         this.setTitle("Maya2D");
@@ -31,7 +32,7 @@ public class ContentFrame extends JFrame {
         contentPanel.setCanvas(mayaCanvas);
         this.getContentPane().add(contentPanel, BorderLayout.CENTER);
         framePanel = new FramePanel();
-        framePanel.setPreferredSize(new Dimension(1280, 60));
+        framePanel.setPreferredSize(new Dimension(880, 60));
         framePanel.setBackground(new Color(35, 35, 35));
         this.getContentPane().add(framePanel, BorderLayout.SOUTH);
         attributesPanel = new AttributesPanel();
