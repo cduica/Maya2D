@@ -7,16 +7,22 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 
-public class PlayControlPanel extends JPanel implements MouseListener, MouseMotionListener {
+public class PlayControlPanel extends JPanel implements MouseListener, MouseMotionListener, Subject {
 
     private Rectangle backButton;
     private Rectangle forwardButton;
     private Rectangle playButton;
+    private int numFrames;
+    private JTextField frameField;
+    private java.util.List<Observer> observers;
 
     public PlayControlPanel(){
         addMouseListener(this);
         addMouseMotionListener(this);
+
+        observers = new ArrayList<>();
 
         this.backButton = new Rectangle(145, 20, 20, 20);
         this.forwardButton = new Rectangle(195, 20, 20, 20);
@@ -27,7 +33,8 @@ public class PlayControlPanel extends JPanel implements MouseListener, MouseMoti
         frameLabel.setForeground(Color.LIGHT_GRAY);
         this.add(Box.createRigidArea(new Dimension(10, 0)));
         this.add(frameLabel);
-        JTextField frameField = new JTextField(10);
+        this.setFocusable(true);
+        frameField = new JTextField(10);
         frameField.setMaximumSize(new Dimension(50, 20));
         frameField.setBackground(Color.DARK_GRAY);
         frameField.setForeground(Color.LIGHT_GRAY);
@@ -42,6 +49,9 @@ public class PlayControlPanel extends JPanel implements MouseListener, MouseMoti
             public void keyPressed(KeyEvent e) {
                 if(e.getKeyCode()==KeyEvent.VK_ENTER) {
                     // recreate frame ruler with new frames number
+                    numFrames = Integer.parseInt(frameField.getText());
+                    notifyObservers();
+                    transferFocusBackward();
                 }
             }
 
@@ -121,5 +131,31 @@ public class PlayControlPanel extends JPanel implements MouseListener, MouseMoti
     @Override
     public void mouseMoved(MouseEvent e) {
 
+    }
+
+    public int getNumFrames() {
+        return numFrames;
+    }
+
+    public void setNumFrames(int numFrames) {
+        this.numFrames = numFrames;
+        this.frameField.setText("" + numFrames);
+    }
+
+    @Override
+    public void attach(Observer o) {
+        observers.add(o);
+    }
+
+    @Override
+    public void detach(Observer o) {
+        observers.remove(o);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for(int i = 0; i < observers.size(); ++i) {
+            observers.get(i).update();
+        }
     }
 }

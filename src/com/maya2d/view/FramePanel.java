@@ -8,7 +8,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
 
-public class FramePanel extends JPanel implements MouseListener, MouseMotionListener {
+public class FramePanel extends JPanel implements MouseListener, MouseMotionListener, Observer {
 
     private JScrollPane jScrollPane;
     private BufferedImage frameBar;
@@ -17,32 +17,33 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
     private int width;
     private int height;
     private int numFrames;
-    private int size;
+    private final int INTERVAL_SIZE = 35;
     private int frame;
 
     public FramePanel() {
-        width = 1030;
-        height = 40;
+        numFrames = 30;
         this.setLayout(new BorderLayout());
         initFrames();
         updateFrameBar();
-        this.add(jScrollPane);
+        // this.add(jScrollPane);
         playControlPanel = new PlayControlPanel();
         playControlPanel.setPreferredSize(new Dimension(250, 60));
         playControlPanel.setBackground(new Color(25, 25, 25));
+        playControlPanel.setNumFrames(numFrames);
+        playControlPanel.attach(this);
         this.add(playControlPanel, BorderLayout.EAST);
     }
 
     private void initFrames(){
+        width = numFrames*INTERVAL_SIZE;
+        height = 40;
         frameBar = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         g2d = frameBar.createGraphics();
         g2d.setColor(Color.DARK_GRAY);
         g2d.fillRect(0, 0, frameBar.getWidth(), frameBar.getHeight());
-        numFrames = 30;
-        size = 1030/numFrames;
         g2d.setColor(Color.LIGHT_GRAY);
         for(int i = 0; i < numFrames; ++i) {
-            int x = i*size;
+            int x = i*INTERVAL_SIZE;
             Line2D line = new Line2D.Double(x, 20, x, 40);
             g2d.draw(line);
             g2d.setFont(UIManager.getFont("Label.font"));
@@ -87,14 +88,14 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
 
     private void drawSelected(MouseEvent e) {
         g2d.setColor(Color.DARK_GRAY);
-        Line2D line = new Line2D.Double(frame*size, 0, frame*size, height);
+        Line2D line = new Line2D.Double(frame*INTERVAL_SIZE, 0, frame*INTERVAL_SIZE, height);
         g2d.draw(line);
         g2d.setColor(Color.LIGHT_GRAY);
-        line = new Line2D.Double(frame*size, 20, frame*size, 40);
+        line = new Line2D.Double(frame*INTERVAL_SIZE, 20, frame*INTERVAL_SIZE, 40);
         g2d.draw(line);
         // get approx frame number
-        frame = (int) e.getPoint().getX()/size;
-        line = new Line2D.Double(frame*size, 0, frame*size, height);
+        frame = (int) e.getPoint().getX()/INTERVAL_SIZE;
+        line = new Line2D.Double(frame*INTERVAL_SIZE, 0, frame*INTERVAL_SIZE, height);
         g2d.draw(line);
         updateFrameBar();
     }
@@ -109,5 +110,12 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
         jScrollPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
         this.add(jScrollPane);
         this.validate();
+    }
+
+    @Override
+    public void update() {
+        this.numFrames = playControlPanel.getNumFrames();
+        initFrames();
+        updateFrameBar();
     }
 }
