@@ -54,6 +54,21 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
         }
     }
 
+    private void drawKeyframedStates() {
+
+        if(canvas.getSelected()==null)
+            return;
+
+        java.util.List<Integer> keyframedStates = canvas.getSelected().getKeyFramedStates();
+
+        g2d.setColor(Color.RED);
+        for (int i = 0; i < keyframedStates.size(); ++i) {
+            int x = keyframedStates.get(i);
+            Line2D line = new Line2D.Double(x * INTERVAL_SIZE, 0, x * INTERVAL_SIZE, height);
+            g2d.draw(line);
+        }
+    }
+
     @Override
     public void mouseClicked(MouseEvent e) {
 
@@ -62,6 +77,7 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
     @Override
     public void mousePressed(MouseEvent e) {
         drawSelected(e);
+        updateCurrentFrameInCanvas();
     }
 
     @Override
@@ -104,6 +120,7 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
         AnimationFrame.getInstance().setFrame((int) e.getPoint().getX()/INTERVAL_SIZE);
         line = new Line2D.Double(AnimationFrame.getInstance().getFrame()*INTERVAL_SIZE, 0, AnimationFrame.getInstance().getFrame()*INTERVAL_SIZE, height);
         g2d.draw(line);
+        drawKeyframedStates();
         updateFrameBar();
     }
 
