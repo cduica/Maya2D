@@ -141,7 +141,8 @@ public abstract class Component implements Subject, Element {
             double[] yPositions = positionInterpolator.createPositionInterpolation(previous.getPosition().getY(), currentState.getPosition().getY(), steps);
             for(int i = 0; i < steps; ++i) {
                 // create a new state for each step
-                State s = new State(new Point((int)xPositions[i], (int)yPositions[i]), colors[i], previous.getSize(), true, i);
+                int frameNo = previous.getFrame() + i + 1;
+                State s = new State(new Point((int)xPositions[i], (int)yPositions[i]), colors[i], previous.getSize(), true, frameNo);
                 states.add(s);
             }
         }
