@@ -13,7 +13,7 @@ public class ContentFrame extends JFrame {
     private FramePanel framePanel;
     private AttributesPanel attributesPanel;
     private EditingPanel editingPanel;
-    private PlayControlPanel playControlPanel;
+    private MayaCanvas mayaCanvas;
 
     public ContentFrame(int width, int height){
         this.setTitle("Maya2D");
@@ -27,13 +27,14 @@ public class ContentFrame extends JFrame {
         contentPanel = new ContentPanel();
         contentPanel.setPreferredSize(new Dimension(400, 400));
         DrawingVisitor v = new DrawingVisitor(contentPanel);
-        MayaCanvas mayaCanvas = new MayaCanvas(v);
+        mayaCanvas = new MayaCanvas(v);
         mayaCanvas.attach(contentPanel);
         contentPanel.setCanvas(mayaCanvas);
         this.getContentPane().add(contentPanel, BorderLayout.CENTER);
         framePanel = new FramePanel();
         framePanel.setPreferredSize(new Dimension(880, 60));
         framePanel.setBackground(new Color(35, 35, 35));
+        framePanel.setCanvas(mayaCanvas);
         this.getContentPane().add(framePanel, BorderLayout.SOUTH);
         attributesPanel = new AttributesPanel();
         attributesPanel.setPreferredSize(new Dimension(250, 800));
@@ -121,7 +122,8 @@ public class ContentFrame extends JFrame {
         keyframeItem.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
-                System.exit(0);
+                if(mayaCanvas!=null)
+                    mayaCanvas.getSelected().keyCurrentFrame();
             }
         });
 

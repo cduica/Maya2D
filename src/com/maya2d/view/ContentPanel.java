@@ -76,7 +76,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
         // paint shapes in the current camera context
         for (int i = 0; i < shapeComposites.size(); ++i){
             ShapeComposite shapeComposite = shapeComposites.get(i);
-            State s = shapeComposite.getStateAtFrame(0);
+            State s = shapeComposite.getCurrentState();
             double x = (s.getPosition().getX() + camera.getX());
             double y = (s.getPosition().getY() - camera.getY());
             System.out.println(x + ", " + y);
@@ -255,7 +255,6 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
             mPosX = e.getPoint().getX();
             mPosY = e.getPoint().getY();
             System.out.println(delta);
-            State s = canvas.getSelected().getStateAtFrame(0);
 
         }
     }
@@ -263,7 +262,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
     private void updateSelectedPositionY(MouseEvent e){
         if(canvas.getSelected()!=null){
             double deltaY = mPosY - e.getPoint().getY();
-            State s = canvas.getSelected().getStateAtFrame(0);
+            State s = canvas.getSelected().getCurrentState();
             Point position = s.getPosition();
             mPosY = e.getPoint().getY();
             int y = (int)(position.getY() - deltaY);
@@ -281,7 +280,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
     private void updateSelectedPositionX(MouseEvent e){
         if(canvas.getSelected()!=null){
             double deltaX = e.getPoint().getX() - mPosX;
-            State s = canvas.getSelected().getStateAtFrame(0);
+            State s = canvas.getSelected().getCurrentState();
             Point position = s.getPosition();
             mPosX = e.getPoint().getX();
             int x = (int)(position.getX() + deltaX);
@@ -300,7 +299,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
         if(canvas.getSelected()!=null){
             double deltaX = e.getPoint().getX() - mPosX;
             double deltaY = mPosY - e.getPoint().getY();
-            State s = canvas.getSelected().getStateAtFrame(0);
+            State s = canvas.getSelected().getCurrentState();
             Point position = s.getPosition();
             mPosX = e.getPoint().getX();
             int x = (int)(position.getX() + deltaX);
@@ -320,7 +319,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
         if(canvas.getSelected()!=null){
             double deltaX = e.getPoint().getX() - mPosX;
             double deltaY = mPosY - e.getPoint().getY();
-            State s = canvas.getSelected().getStateAtFrame(0);
+            State s = canvas.getSelected().getCurrentState();
             Point position = s.getPosition();
             mPosX = e.getPoint().getX();
             mPosY = e.getPoint().getY();
@@ -363,7 +362,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
             com.maya2d.model.Component newShape = canvas.get(new Point(-9999, -9999));
             Point p = new Point(getWidth()/2, getHeight()/2);
             State s = new State(p, new Color(0x00d1ff), 1.0, true, 0);
-            newShape.addState(s);
+            newShape.setCurrentState(s);
             newShape.attach(this);
             canvas.remove(new Point(-9999, -9999));
             canvas.add(newShape, p);

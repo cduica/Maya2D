@@ -254,7 +254,7 @@ public class AttributesPanel extends JPanel implements MouseListener, MouseMotio
             identifierField.transferFocusBackward();
             if(canvas.getSelected()!=null){
                 identifierField.setText(canvas.getSelected().getIdentifier());
-                State s = canvas.getSelected().getStateAtFrame(0);
+                State s = canvas.getSelected().getCurrentState();
                 xField.setText("" + s.getPosition().getX());
                 yField.setText("" + s.getPosition().getY());
             }
@@ -262,32 +262,32 @@ public class AttributesPanel extends JPanel implements MouseListener, MouseMotio
         }
         if(red.contains(e.getPoint())){
             com.maya2d.model.Component c = canvas.getSelected();
-            State s = c.getStateAtFrame(0);
+            State s = c.getCurrentState();
             s.setColor(Color.RED);
             notifyObservers();
         } else if(orange.contains(e.getPoint())){
             com.maya2d.model.Component c = canvas.getSelected();
-            State s = c.getStateAtFrame(0);
+            State s = c.getCurrentState();
             s.setColor(Color.ORANGE);
             notifyObservers();
         } else if(pink.contains(e.getPoint())){
             com.maya2d.model.Component c = canvas.getSelected();
-            State s = c.getStateAtFrame(0);
+            State s = c.getCurrentState();
             s.setColor(Color.PINK);
             notifyObservers();
         } else if(green.contains(e.getPoint())){
             com.maya2d.model.Component c = canvas.getSelected();
-            State s = c.getStateAtFrame(0);
+            State s = c.getCurrentState();
             s.setColor(Color.GREEN);
             notifyObservers();
         } else if(blue.contains(e.getPoint())){
             com.maya2d.model.Component c = canvas.getSelected();
-            State s = c.getStateAtFrame(0);
+            State s = c.getCurrentState();
             s.setColor(Color.BLUE);
             notifyObservers();
         } else if(customButton.contains(e.getPoint())){
             com.maya2d.model.Component c = canvas.getSelected();
-            State s = c.getStateAtFrame(0);
+            State s = c.getCurrentState();
             String userInput = JOptionPane.showInputDialog("Enter custom color [0xRRGGBB]: ");
             int i =(int) Long.parseLong( userInput.substring( 2, userInput.length() ), 16 );
             s.setColor(new Color(i));
@@ -350,7 +350,7 @@ public class AttributesPanel extends JPanel implements MouseListener, MouseMotio
     public void update() {
         if(canvas.getSelected()!=null) {
             identifierField.setText(canvas.getSelected().getIdentifier());
-            State s = canvas.getSelected().getStateAtFrame(0);
+            State s = canvas.getSelected().getCurrentState();
             xField.setText("" + s.getPosition().getX());
             yField.setText("" + s.getPosition().getY());
         }

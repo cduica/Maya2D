@@ -1,5 +1,6 @@
 package com.maya2d.view;
 
+import com.maya2d.model.MayaCanvas;
 import com.maya2d.utilities.Assets;
 
 import javax.swing.*;
@@ -17,6 +18,7 @@ public class PlayControlPanel extends JPanel implements MouseListener, MouseMoti
     private int numFrames;
     private JTextField frameField;
     private java.util.List<Observer> observers;
+    private MayaCanvas canvas;
 
     public PlayControlPanel(){
         addMouseListener(this);
@@ -157,5 +159,9 @@ public class PlayControlPanel extends JPanel implements MouseListener, MouseMoti
         for(int i = 0; i < observers.size(); ++i) {
             observers.get(i).update();
         }
+    }
+
+    public void setCanvas(MayaCanvas canvas) {
+        this.canvas = canvas;
     }
 }

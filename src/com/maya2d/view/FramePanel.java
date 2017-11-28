@@ -1,5 +1,8 @@
 package com.maya2d.view;
 
+import com.maya2d.model.AnimationFrame;
+import com.maya2d.model.MayaCanvas;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -18,7 +21,7 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
     private int height;
     private int numFrames;
     private final int INTERVAL_SIZE = 35;
-    private int frame;
+    private MayaCanvas canvas;
 
     public FramePanel() {
         numFrames = 30;
@@ -86,16 +89,20 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
 
     }
 
+    public void updateCurrentFrameInCanvas() {
+        canvas.getSelected().setCurrentStateToFrame(AnimationFrame.getInstance().getFrame());
+    }
+
     private void drawSelected(MouseEvent e) {
         g2d.setColor(Color.DARK_GRAY);
-        Line2D line = new Line2D.Double(frame*INTERVAL_SIZE, 0, frame*INTERVAL_SIZE, height);
+        Line2D line = new Line2D.Double(AnimationFrame.getInstance().getFrame()*INTERVAL_SIZE, 0, AnimationFrame.getInstance().getFrame()*INTERVAL_SIZE, height);
         g2d.draw(line);
         g2d.setColor(Color.LIGHT_GRAY);
-        line = new Line2D.Double(frame*INTERVAL_SIZE, 20, frame*INTERVAL_SIZE, 40);
+        line = new Line2D.Double(AnimationFrame.getInstance().getFrame()*INTERVAL_SIZE, 20, AnimationFrame.getInstance().getFrame()*INTERVAL_SIZE, 40);
         g2d.draw(line);
         // get approx frame number
-        frame = (int) e.getPoint().getX()/INTERVAL_SIZE;
-        line = new Line2D.Double(frame*INTERVAL_SIZE, 0, frame*INTERVAL_SIZE, height);
+        AnimationFrame.getInstance().setFrame((int) e.getPoint().getX()/INTERVAL_SIZE);
+        line = new Line2D.Double(AnimationFrame.getInstance().getFrame()*INTERVAL_SIZE, 0, AnimationFrame.getInstance().getFrame()*INTERVAL_SIZE, height);
         g2d.draw(line);
         updateFrameBar();
     }
@@ -117,5 +124,10 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
         this.numFrames = playControlPanel.getNumFrames();
         initFrames();
         updateFrameBar();
+    }
+
+    public void setCanvas(MayaCanvas canvas) {
+        this.canvas = canvas;
+        playControlPanel.setCanvas(canvas);
     }
 }
