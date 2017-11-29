@@ -88,4 +88,10 @@ public class MayaCanvas implements Subject{
     public EditingState getEditingState(){
         return this.editingState;
     }
+
+    public void setComponentsToFrame(int frame) {
+        for(Map.Entry<Point, Component> e : components.entrySet()) {
+            e.getValue().setCurrentStateToFrame(frame);
+        }
+    }
 }

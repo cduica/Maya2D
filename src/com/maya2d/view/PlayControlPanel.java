@@ -19,11 +19,12 @@ public class PlayControlPanel extends JPanel implements MouseListener, MouseMoti
     private JTextField frameField;
     private java.util.List<Observer> observers;
     private MayaCanvas canvas;
+    private ContentPanel contentPanel;
+    private boolean isAnimating;
 
     public PlayControlPanel(){
         addMouseListener(this);
         addMouseMotionListener(this);
-
         observers = new ArrayList<>();
 
         this.backButton = new Rectangle(145, 20, 20, 20);
@@ -107,6 +108,15 @@ public class PlayControlPanel extends JPanel implements MouseListener, MouseMoti
             System.out.println("forward pressed");
         } else if(playButton.contains(e.getPoint())){
             System.out.println("play pressed");
+            if(contentPanel!=null) {
+                if(!isAnimating) {
+                    contentPanel.startAnimation();
+                    isAnimating = true;
+                } else {
+                    contentPanel.pauseAnimaton();
+                    isAnimating = false;
+                }
+            }
         }
     }
 
@@ -164,4 +174,9 @@ public class PlayControlPanel extends JPanel implements MouseListener, MouseMoti
     public void setCanvas(MayaCanvas canvas) {
         this.canvas = canvas;
     }
+
+    public void setContentPanel(ContentPanel contentPanel) {
+        this.contentPanel = contentPanel;
+    }
+
 }

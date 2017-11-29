@@ -22,6 +22,7 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
     private int numFrames;
     private final int INTERVAL_SIZE = 35;
     private MayaCanvas canvas;
+    private java.util.List<Integer> keyframedStates;
 
     public FramePanel() {
         numFrames = 30;
@@ -59,7 +60,18 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
         if(canvas.getSelected()==null)
             return;
 
-        java.util.List<Integer> keyframedStates = canvas.getSelected().getKeyFramedStates();
+        if(keyframedStates!=null) {
+            for(int i = 0; i < keyframedStates.size(); ++i) {
+                g2d.setColor(Color.DARK_GRAY);
+                Line2D line = new Line2D.Double(keyframedStates.get(i)*INTERVAL_SIZE, 0, keyframedStates.get(i)*INTERVAL_SIZE, height);
+                g2d.draw(line);
+                g2d.setColor(Color.LIGHT_GRAY);
+                line = new Line2D.Double(keyframedStates.get(i)*INTERVAL_SIZE, 20, keyframedStates.get(i)*INTERVAL_SIZE, 40);
+                g2d.draw(line);
+            }
+        }
+
+        keyframedStates = canvas.getSelected().getKeyFramedStates();
 
         g2d.setColor(Color.RED);
         for (int i = 0; i < keyframedStates.size(); ++i) {
@@ -67,6 +79,7 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
             Line2D line = new Line2D.Double(x * INTERVAL_SIZE, 0, x * INTERVAL_SIZE, height);
             g2d.draw(line);
         }
+        updateFrameBar();
     }
 
     @Override
@@ -106,7 +119,7 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
     }
 
     public void updateCurrentFrameInCanvas() {
-        canvas.getSelected().setCurrentStateToFrame(AnimationFrame.getInstance().getFrame());
+        canvas.setComponentsToFrame((AnimationFrame.getInstance().getFrame()));
     }
 
     private void drawSelected(MouseEvent e) {
@@ -116,8 +129,12 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
         g2d.setColor(Color.LIGHT_GRAY);
         line = new Line2D.Double(AnimationFrame.getInstance().getFrame()*INTERVAL_SIZE, 20, AnimationFrame.getInstance().getFrame()*INTERVAL_SIZE, 40);
         g2d.draw(line);
+
         // get approx frame number
-        AnimationFrame.getInstance().setFrame((int) e.getPoint().getX()/INTERVAL_SIZE);
+
+        int frameNumber = (int) e.getPoint().getX() + jScrollPane.getHorizontalScrollBar().getValue();
+
+        AnimationFrame.getInstance().setFrame(frameNumber/INTERVAL_SIZE);
         line = new Line2D.Double(AnimationFrame.getInstance().getFrame()*INTERVAL_SIZE, 0, AnimationFrame.getInstance().getFrame()*INTERVAL_SIZE, height);
         g2d.draw(line);
         drawKeyframedStates();
@@ -125,8 +142,12 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
     }
 
     private void updateFrameBar(){
-        if(jScrollPane!=null)
+
+        int offset = 0;
+        if(jScrollPane!=null) {
             this.remove(jScrollPane);
+            offset = jScrollPane.getHorizontalScrollBar().getValue();
+        }
         jScrollPane = new JScrollPane(new JLabel(new ImageIcon(frameBar)));
         jScrollPane.setBackground(Color.DARK_GRAY);
         jScrollPane.addMouseMotionListener( this );
@@ -134,17 +155,23 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
         jScrollPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
         this.add(jScrollPane);
         this.validate();
+        jScrollPane.getHorizontalScrollBar().setValue(offset);
     }
 
     @Override
     public void update() {
         this.numFrames = playControlPanel.getNumFrames();
         initFrames();
+        drawKeyframedStates();
         updateFrameBar();
     }
 
     public void setCanvas(MayaCanvas canvas) {
         this.canvas = canvas;
         playControlPanel.setCanvas(canvas);
+    }
+
+    public void setContentPanel(ContentPanel contentPanel) {
+        playControlPanel.setContentPanel(contentPanel);
     }
 }

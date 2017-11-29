@@ -20,9 +20,9 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
     private java.util.List<ImageComposite> imageComposites;
     private java.util.List<ShapeComposite> shapeComposites;
     private MayaCanvas canvas;
-    private int currentFrame = 0;
     private MayaSelector mayaSelector;
     private MayaRotator mayaRotator;
+    private Timer t;
 
     public ContentPanel(){
         imageComposites = new ArrayList<>();
@@ -52,6 +52,16 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
                 if(e.getKeyCode() == KeyEvent.VK_ALT){
                     System.out.println("Alt pressed");
                     altPressed = false;
+                }
+            }
+        });
+        t = new Timer(1000/30, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                for(int i = 0; i < shapeComposites.size(); ++i) {
+                    shapeComposites.get(i).nextState();
+                    repaint();
                 }
             }
         });
@@ -353,6 +363,23 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
         System.out.println(camera.getX() + ", " + camera.getY());
         repaint();
         //System.out.println(this.getWidth());
+    }
+
+    public void startAnimation() {
+        for(int i = 0; i < shapeComposites.size(); ++i) {
+            shapeComposites.get(i).firstState();
+        }
+        repaint();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                t.start();
+            }
+        }).start();
+    }
+
+    public void pauseAnimaton() {
+        t.stop();
     }
 
     @Override

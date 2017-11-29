@@ -96,10 +96,10 @@ public abstract class Component implements Subject, Element {
     }
 
     public void nextState(){
-        if(states.size() < currentFrame) {
+        if(states.size() > currentFrame) {
             currentState = states.get(currentFrame);
+            currentFrame++;
         }
-        currentFrame++;
     }
 
     public void lastState(){
@@ -148,7 +148,6 @@ public abstract class Component implements Subject, Element {
         }
         // add the currently keyframed state (the last one) to the array
         keyFrames.add(states.get(states.size() - 1));
-
     }
 
     // add some way to delete keyframes

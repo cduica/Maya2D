@@ -35,6 +35,8 @@ public class ContentFrame extends JFrame {
         framePanel.setPreferredSize(new Dimension(880, 60));
         framePanel.setBackground(new Color(35, 35, 35));
         framePanel.setCanvas(mayaCanvas);
+        framePanel.setContentPanel(contentPanel);
+        mayaCanvas.attach(framePanel);
         this.getContentPane().add(framePanel, BorderLayout.SOUTH);
         attributesPanel = new AttributesPanel();
         attributesPanel.setPreferredSize(new Dimension(250, 800));
@@ -124,6 +126,7 @@ public class ContentFrame extends JFrame {
             public void actionPerformed(ActionEvent e){
                 if(mayaCanvas!=null)
                     mayaCanvas.getSelected().keyCurrentFrame();
+                framePanel.update();
             }
         });
 
