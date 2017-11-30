@@ -93,6 +93,7 @@ public abstract class Component implements Subject, Element {
 
     public void firstState(){
         currentFrame = 0;
+        notifyObservers();
     }
 
     public void nextState(){
@@ -104,6 +105,11 @@ public abstract class Component implements Subject, Element {
 
     public void lastState(){
         currentFrame = states.size() - 1;
+        notifyObservers();
+    }
+
+    public boolean isFinishedAnimating(){
+        return currentFrame == states.size();
     }
 
     public State getCurrentState() {
@@ -113,6 +119,7 @@ public abstract class Component implements Subject, Element {
     public void setCurrentStateToFrame( int i ) {
         if(states.size() > i) {
             currentState = states.get(i);
+            notifyObservers();
         }
     }
 

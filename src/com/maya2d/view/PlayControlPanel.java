@@ -20,7 +20,6 @@ public class PlayControlPanel extends JPanel implements MouseListener, MouseMoti
     private java.util.List<Observer> observers;
     private MayaCanvas canvas;
     private ContentPanel contentPanel;
-    private boolean isAnimating;
 
     public PlayControlPanel(){
         addMouseListener(this);
@@ -109,12 +108,12 @@ public class PlayControlPanel extends JPanel implements MouseListener, MouseMoti
         } else if(playButton.contains(e.getPoint())){
             System.out.println("play pressed");
             if(contentPanel!=null) {
-                if(!isAnimating) {
+                if(!contentPanel.isAnimating()) {
                     contentPanel.startAnimation();
-                    isAnimating = true;
+                    contentPanel.setAnimating(true);
                 } else {
                     contentPanel.pauseAnimaton();
-                    isAnimating = false;
+                    contentPanel.setAnimating(false);
                 }
             }
         }

@@ -1,11 +1,17 @@
 package com.maya2d.view;
 
+import com.maya2d.model.ImageComposite;
 import com.maya2d.model.MayaCanvas;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.Buffer;
 
 public class ContentFrame extends JFrame {
 
@@ -14,11 +20,14 @@ public class ContentFrame extends JFrame {
     private AttributesPanel attributesPanel;
     private EditingPanel editingPanel;
     private MayaCanvas mayaCanvas;
+    private final JFileChooser chooser;
 
     public ContentFrame(int width, int height){
         this.setTitle("Maya2D");
         this.setSize(width, height);
         this.getContentPane().setBackground(new Color(65, 65, 65));
+        chooser = new JFileChooser();
+        chooser.setCurrentDirectory(new File("."));
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (screen.width - width) / 2;
         int y = (screen.height - height) / 2;
@@ -117,6 +126,20 @@ public class ContentFrame extends JFrame {
 
         editMenu.add(redoItem);
 
+        JMenu insertMenu = new JMenu("Insert");
+
+        JMenuItem imageItem = new JMenuItem("Image               ");
+
+        imageItem.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                openImageDialogue();
+            }
+        });
+
+        insertMenu.add(imageItem);
+
+
         JMenu keyMenu = new JMenu("Key");
 
         JMenuItem keyframeItem = new JMenuItem("Key current frame   ");
@@ -136,8 +159,27 @@ public class ContentFrame extends JFrame {
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
+        menuBar.add(insertMenu);
         menuBar.add(keyMenu);
         this.setJMenuBar(menuBar);
+    }
+
+    private void openImageDialogue() {
+        File file = null;
+        if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
+            file = chooser.getSelectedFile();
+        }
+        try {
+            if(file!=null) {
+                BufferedImage image = ImageIO.read(file);
+                ImageComposite imageComposite = new ImageComposite(image);
+                mayaCanvas.add(imageComposite, new Point(-9999, -9999));
+                mayaCanvas.notifyObservers();
+            }
+
+        } catch (IOException exception){
+            JOptionPane.showMessageDialog(this, exception);
+        }
     }
 
 }

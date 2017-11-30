@@ -40,7 +40,17 @@ public class MayaCanvas implements Subject{
         return components.containsKey(p);
     }
 
-    public void remove(Point p){
+    public void remove(Component c){
+
+        // im so sorry
+        for(Map.Entry<Point, Component> e : components.entrySet()) {
+            if(e.getValue().equals(c)){
+                components.remove(e.getKey());
+            }
+        }
+    }
+
+    public void remove(Point p) {
         components.remove(p);
     }
 

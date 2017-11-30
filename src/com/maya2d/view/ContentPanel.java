@@ -8,6 +8,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class ContentPanel extends JPanel implements MouseListener, MouseMotionListener, Observer {
@@ -23,6 +24,7 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
     private MayaSelector mayaSelector;
     private MayaRotator mayaRotator;
     private Timer t;
+    private boolean isAnimating;
 
     public ContentPanel(){
         imageComposites = new ArrayList<>();
@@ -44,6 +46,14 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
                 if(e.getKeyCode() == KeyEvent.VK_ALT){
                     System.out.println("Alt pressed");
                     altPressed = true;
+                } else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+                    if(canvas.getSelected()!=null) {
+                        deleteShape(canvas.getSelected());
+                        canvas.setSelected(null);
+                        mayaSelector = null;
+                        mayaRotator = null;
+                    }
+                    update();
                 }
             }
 
@@ -60,6 +70,10 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
             public void actionPerformed(ActionEvent e) {
 
                 for(int i = 0; i < shapeComposites.size(); ++i) {
+                    if(shapeComposites.get(i).isFinishedAnimating()){
+                        pauseAnimaton();
+                        isAnimating = false;
+                    }
                     shapeComposites.get(i).nextState();
                     repaint();
                 }
@@ -81,6 +95,17 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
             double y = i * SUBDIVISION_SIZE - camera.getY();
             Line2D line = new Line2D.Double(0, y, getSize().width, y);
             g2.draw(line);
+        }
+
+        // paint images in the current camera context
+        for(int i = 0; i < imageComposites.size(); ++i){
+            ImageComposite imageComposite = imageComposites.get(i);
+            State s = imageComposite.getCurrentState();
+            double x = (s.getPosition().getX() + camera.getX());
+            double y = (s.getPosition().getY() - camera.getY());
+            g.drawImage(imageComposite.getImage(), (int)x, (int)y, this);
+            imageComposite.setX(x);
+            imageComposite.setY(y);
         }
 
         // paint shapes in the current camera context
@@ -113,11 +138,6 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
                 g2.setColor(s.getColor());
                 g2.fill(r);
             }
-
-        }
-
-        // paint images in the current camera context
-        for(int i = 0; i < imageComposites.size(); ++i){
 
         }
 
@@ -162,14 +182,14 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
             shapeComposites.add(s);
     }
 
-    private void deleteImage(Point p){
-        imageComposites.remove(canvas.get(p));
-        canvas.remove(p);
+    private void deleteImage(com.maya2d.model.Component c){
+        imageComposites.remove(c);
+        canvas.remove(c);
     }
 
-    private void deleteShape(Point p){
-        shapeComposites.remove(canvas.get(p));
-        canvas.remove(p);
+    private void deleteShape(com.maya2d.model.Component c){
+        shapeComposites.remove(c);
+        canvas.remove(c);
     }
 
     private void createSelector(double x, double y){
@@ -187,8 +207,26 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 
         double x = e.getPoint().getX();
         double y = e.getPoint().getY();
+        boolean shapeSelected = false;
+        boolean imageSelected = false;
 
-        for(int i = 0; i < shapeComposites.size(); ++i){
+        for(int i = 0; i < imageComposites.size(); ++i) {
+            if(imageComposites.get(i).contains(e.getPoint())){
+                canvas.setSelected(imageComposites.get(i));
+                if(canvas.getEditingState().equals(EditingState.TRANSLATE)) {
+                    createSelector(x, y);
+                    mayaRotator = null;
+                }
+                if(canvas.getEditingState().equals(EditingState.ROTATE)){
+                    createRotator((int) (x), (int) (y));
+                    mayaSelector = null;
+                }
+                imageSelected = true;
+                break;
+            }
+        }
+
+        for(int i = 0; i < shapeComposites.size(); ++i) {
             Shape s = shapeComposites.get(i).getShape();
             if(s.contains(x, y)){
                 canvas.setSelected(shapeComposites.get(i));
@@ -202,10 +240,13 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
                     createRotator((int) (x), (int) (y));
                     mayaSelector = null;
                 }
+                shapeSelected = true;
                 break;
-            } else {
-                canvas.setSelected(null);
             }
+        }
+
+        if(!shapeSelected && !imageSelected) {
+            canvas.setSelected(null);
         }
     }
 
@@ -410,4 +451,11 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
         this.canvas = mayaCanvas;
     }
 
+    public boolean isAnimating() {
+        return isAnimating;
+    }
+
+    public void setAnimating(boolean animating) {
+        isAnimating = animating;
+    }
 }

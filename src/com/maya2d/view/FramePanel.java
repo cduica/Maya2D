@@ -23,6 +23,7 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
     private final int INTERVAL_SIZE = 35;
     private MayaCanvas canvas;
     private java.util.List<Integer> keyframedStates;
+    private Point currentPoint;
 
     public FramePanel() {
         numFrames = 30;
@@ -89,7 +90,8 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
 
     @Override
     public void mousePressed(MouseEvent e) {
-        drawSelected(e);
+        currentPoint = e.getPoint();
+        drawSelected(currentPoint);
         updateCurrentFrameInCanvas();
     }
 
@@ -122,7 +124,7 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
         canvas.setComponentsToFrame((AnimationFrame.getInstance().getFrame()));
     }
 
-    private void drawSelected(MouseEvent e) {
+    private void drawSelected(Point p) {
         g2d.setColor(Color.DARK_GRAY);
         Line2D line = new Line2D.Double(AnimationFrame.getInstance().getFrame()*INTERVAL_SIZE, 0, AnimationFrame.getInstance().getFrame()*INTERVAL_SIZE, height);
         g2d.draw(line);
@@ -132,7 +134,7 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
 
         // get approx frame number
 
-        int frameNumber = (int) e.getPoint().getX() + jScrollPane.getHorizontalScrollBar().getValue();
+        int frameNumber = (int) p.getX() + jScrollPane.getHorizontalScrollBar().getValue();
 
         AnimationFrame.getInstance().setFrame(frameNumber/INTERVAL_SIZE);
         line = new Line2D.Double(AnimationFrame.getInstance().getFrame()*INTERVAL_SIZE, 0, AnimationFrame.getInstance().getFrame()*INTERVAL_SIZE, height);
@@ -162,6 +164,8 @@ public class FramePanel extends JPanel implements MouseListener, MouseMotionList
     public void update() {
         this.numFrames = playControlPanel.getNumFrames();
         initFrames();
+        if(currentPoint!=null)
+            drawSelected(currentPoint);
         drawKeyframedStates();
         updateFrameBar();
     }
