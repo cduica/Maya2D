@@ -103,8 +103,14 @@ public class PlayControlPanel extends JPanel implements MouseListener, MouseMoti
     public void mousePressed(MouseEvent e) {
         if(backButton.contains(e.getPoint())) {
             System.out.println("back pressed");
+            if(contentPanel!=null) {
+                contentPanel.firstFrame();
+            }
         } else if(forwardButton.contains(e.getPoint())) {
             System.out.println("forward pressed");
+            if(contentPanel!=null) {
+                contentPanel.lastFrame();
+            }
         } else if(playButton.contains(e.getPoint())){
             System.out.println("play pressed");
             if(contentPanel!=null) {

@@ -93,6 +93,7 @@ public abstract class Component implements Subject, Element {
 
     public void firstState(){
         currentFrame = 0;
+        currentState = states.get(currentFrame);
         notifyObservers();
     }
 
@@ -105,6 +106,7 @@ public abstract class Component implements Subject, Element {
 
     public void lastState(){
         currentFrame = states.size() - 1;
+        currentState = states.get(currentFrame);
         notifyObservers();
     }
 

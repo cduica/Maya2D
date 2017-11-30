@@ -69,6 +69,15 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
             @Override
             public void actionPerformed(ActionEvent e) {
 
+                for(int i = 0; i < imageComposites.size(); ++i) {
+                    if(imageComposites.get(i).isFinishedAnimating()) {
+                        pauseAnimaton();
+                        isAnimating = false;
+                    }
+                    imageComposites.get(i).nextState();
+                    repaint();
+                }
+
                 for(int i = 0; i < shapeComposites.size(); ++i) {
                     if(shapeComposites.get(i).isFinishedAnimating()){
                         pauseAnimaton();
@@ -407,9 +416,15 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
     }
 
     public void startAnimation() {
+
+        for(int i = 0; i < imageComposites.size(); ++i) {
+            imageComposites.get(i).firstState();
+        }
+
         for(int i = 0; i < shapeComposites.size(); ++i) {
             shapeComposites.get(i).firstState();
         }
+
         repaint();
         new Thread(new Runnable() {
             @Override
@@ -421,6 +436,30 @@ public class ContentPanel extends JPanel implements MouseListener, MouseMotionLi
 
     public void pauseAnimaton() {
         t.stop();
+    }
+
+    public void firstFrame() {
+
+        for(int i = 0; i < imageComposites.size(); ++i) {
+            imageComposites.get(i).firstState();
+        }
+
+        for(int i = 0; i < shapeComposites.size(); ++i) {
+            shapeComposites.get(i).firstState();
+        }
+        repaint();
+    }
+
+    public void lastFrame() {
+
+        for(int i = 0; i < imageComposites.size(); ++i) {
+            imageComposites.get(i).lastState();
+        }
+
+        for(int i = 0; i < shapeComposites.size(); ++i) {
+            shapeComposites.get(i).lastState();
+        }
+        repaint();
     }
 
     @Override
